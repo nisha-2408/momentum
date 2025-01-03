@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:resolution_tracker/providers/auth.dart';
 
 class SignupScreen extends StatefulWidget {
   static const routeName = '/signup';
@@ -129,23 +129,19 @@ class _SignupScreenState extends State<SignupScreen> {
                       final email = _emailController.text;
                       final password = _passwordController.text;
                       final fullName = _nameController.text;
-                      UserCredential user;
                       setState(() {
                         _isLoading = true;
                       });
-                      user = await FirebaseAuth.instance
-                          .createUserWithEmailAndPassword(
-                              email: email, password: password);
-                      await FirebaseFirestore.instance
-                          .collection('users')
-                          .doc(user.user!.uid)
-                          .set({'name': fullName, 'email': email});
-                      setState(() {
-                        _isLoading = false;
+                      await Provider.of<Auth>(context, listen: false)
+                          .signUp(email, password, fullName)
+                          .then((value) {
+                        setState(() {
+                          _isLoading = false;
+                        });
+                        // ignore: unrelated_type_equality_checks
+                        //Navigator.popUntil(context, ModalRoute.withName('/'));
+                        Navigator.of(context).pushReplacementNamed('/home');
                       });
-                      // ignore: unrelated_type_equality_checks
-                      //Navigator.popUntil(context, ModalRoute.withName('/'));
-                      Navigator.of(context).pushReplacementNamed('/home');
                     } on HttpException catch (error) {
                       setState(() {
                         _isLoading = false;

@@ -1,8 +1,26 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:resolution_tracker/providers/auth.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   static const routeName = '/home';
+  const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+   @override
+  void initState() {
+    super.initState();
+    initialization();
+  }
+
+  void initialization() async {
+    FlutterNativeSplash.remove();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -13,7 +31,7 @@ class HomeScreen extends StatelessWidget {
           height: 100,
           child: ElevatedButton(
             onPressed: () async {
-              await FirebaseAuth.instance.signOut();
+              await Provider.of<Auth>(context, listen: false).logOut();
             },
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(

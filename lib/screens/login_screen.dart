@@ -1,6 +1,7 @@
 import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:resolution_tracker/providers/auth.dart';
 
 class LoginScreen extends StatefulWidget {
   static const routeName = '/login';
@@ -126,7 +127,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       setState(() {
                         _isLoading = true;
                       });
-                      await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password).then((value) {
+                      await Provider.of<Auth>(context, listen: false)
+                          .signIn(email, password)
+                          .then((value) {
                         print('success');
                         Navigator.of(context).pushReplacementNamed('/home');
                       });
@@ -186,7 +189,18 @@ class _LoginScreenState extends State<LoginScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: () async {
+                      await Provider.of<Auth>(context, listen: false)
+                          .googleLogin()
+                          .then((value) {
+                        setState(() {
+                          _isLoading = true;
+                        });
+                        Navigator.of(context).pushReplacementNamed('/home');
+                      }).catchError((err) {
+                        print(err);
+                      });
+                    },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
