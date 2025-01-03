@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -12,6 +14,25 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   var notShowPass = true;
+  var _isLoading = false;
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('An Error Occurred!'),
+        content: Text(message),
+        actions: <Widget>[
+          TextButton(
+            child: Text('Okay'),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+          )
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,23 +110,59 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.black,
-                    backgroundColor: Colors.white,
+                    backgroundColor: _isLoading ? Colors.grey : Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     // Handle next action
-                    final email = _emailController.text;
-                    final password = _passwordController.text;
-
-                    // Debug: Print credentials
-                    print('Email: $email');
-                    print('Password: $password');
-                    Navigator.of(context).pushReplacementNamed('/home');
+                    if (_isLoading) {
+                      return;
+                    }
+                    try {
+                      final email = _emailController.text;
+                      final password = _passwordController.text;
+                      setState(() {
+                        _isLoading = true;
+                      });
+                      await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password).then((value) {
+                        print('success');
+                        Navigator.of(context).pushReplacementNamed('/home');
+                      });
+                      setState(() {
+                        _isLoading = false;
+                      });
+                    } on HttpException catch (error) {
+                      setState(() {
+                        _isLoading = false;
+                      });
+                      var errorMessage = 'Authentication failed';
+                      if (error.toString().contains('EMAIL_NOT_FOUND')) {
+                        errorMessage = 'Could not find a user with that email.';
+                      } else if (error.toString().contains('wrong-password')) {
+                        errorMessage = 'Invalid password.';
+                      }
+                      _showErrorDialog(errorMessage);
+                    } catch (error) {
+                      setState(() {
+                        _isLoading = false;
+                      });
+                      print(error);
+                      var errorMessage;
+                      if (error.toString().contains("wrong-password")) {
+                        errorMessage = 'Invalid password.';
+                      } else if (error.toString().contains("user-not-found")) {
+                        errorMessage = 'Could not find a user with that email.';
+                      } else {
+                        errorMessage =
+                            "Could not authenticate you!! Try again later :(";
+                      }
+                      _showErrorDialog(errorMessage);
+                    }
                   },
-                  child: const Text(
-                    'Login',
+                  child: Text(
+                    _isLoading ? 'Logging in...' : 'Login',
                     style: TextStyle(fontSize: 18, fontFamily: 'Poppins'),
                   ),
                 ),

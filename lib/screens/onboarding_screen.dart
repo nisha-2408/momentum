@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:resolution_tracker/constants/onboard_screen.dart';
 import 'package:resolution_tracker/widgets/carousal_animated_indicator.dart';
 import 'package:resolution_tracker/widgets/onboarding.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 class OnboardingScreen extends StatefulWidget {
   static const routeName = '/onboarding';
@@ -12,6 +13,15 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
+  @override
+  void initState() {
+    super.initState();
+    initialization();
+  }
+
+  void initialization() async {
+    FlutterNativeSplash.remove();
+  }
   int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {

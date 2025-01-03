@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ForgotPasswordEmail extends StatefulWidget {
@@ -11,6 +12,24 @@ class ForgotPasswordEmail extends StatefulWidget {
 class _ForgotPasswordEmailState extends State<ForgotPasswordEmail> {
   final TextEditingController _emailController = TextEditingController();
   var notShowPass = true;
+
+  void _showErrorDialog(String message, bool isSuccess) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: isSuccess ? Text("Success!") : Text('An Error Occurred!'),
+        content: Text(message),
+        actions: <Widget>[
+          TextButton(
+            child: Text('Okay'),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+          )
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,13 +95,23 @@ class _ForgotPasswordEmailState extends State<ForgotPasswordEmail> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     // Handle next action
                     final email = _emailController.text;
+                    try {
+                      await FirebaseAuth.instance
+                          .sendPasswordResetEmail(email: email);
+                      _showErrorDialog(
+                          "Password reset email has been sent your registered mail!! After resetting the password please login",
+                          true);
+                      _emailController.clear();
+                    } catch (error) {
+                      _showErrorDialog(
+                          "No user with $email was found!!", false);
+                    }
 
                     // Debug: Print credentials
                     print('Email: $email');
-                    Navigator.of(context).pushNamed('/forgot_password');
                   },
                   child: const Text(
                     'Submit',

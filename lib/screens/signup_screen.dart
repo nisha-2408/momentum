@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -13,6 +17,26 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   var notShowPass = true;
+  var _isLoading = false;
+  var _isError = false;
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('An Error Occurred!'),
+        content: Text(message),
+        actions: <Widget>[
+          TextButton(
+            child: Text('Okay'),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+          )
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,23 +116,72 @@ class _SignupScreenState extends State<SignupScreen> {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.black,
-                    backgroundColor: Colors.white,
+                    backgroundColor: _isLoading ? Colors.grey : Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  onPressed: () {
-                    // Handle next action
-                    final email = _emailController.text;
-                    final password = _passwordController.text;
-
-                    // Debug: Print credentials
-                    print('Email: $email');
-                    print('Password: $password');
-                    Navigator.of(context).pushReplacementNamed('/home');
+                  onPressed: () async {
+                    if (_isLoading) {
+                      return;
+                    }
+                    try {
+                      final email = _emailController.text;
+                      final password = _passwordController.text;
+                      final fullName = _nameController.text;
+                      UserCredential user;
+                      setState(() {
+                        _isLoading = true;
+                      });
+                      user = await FirebaseAuth.instance
+                          .createUserWithEmailAndPassword(
+                              email: email, password: password);
+                      await FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(user.user!.uid)
+                          .set({'name': fullName, 'email': email});
+                      setState(() {
+                        _isLoading = false;
+                      });
+                      // ignore: unrelated_type_equality_checks
+                      //Navigator.popUntil(context, ModalRoute.withName('/'));
+                      Navigator.of(context).pushReplacementNamed('/home');
+                    } on HttpException catch (error) {
+                      setState(() {
+                        _isLoading = false;
+                      });
+                      _isError = true;
+                      var errorMessage = 'Authentication failed';
+                      if (error.toString().contains('EMAIL_EXISTS')) {
+                        errorMessage = 'This email address is already in use.';
+                      } else if (error.toString().contains('INVALID_EMAIL')) {
+                        errorMessage = 'This is not a valid email address';
+                      } else if (error.toString().contains('WEAK_PASSWORD')) {
+                        errorMessage = 'This password is too weak.';
+                      }
+                      _showErrorDialog(errorMessage);
+                    } catch (error) {
+                      print(error);
+                      setState(() {
+                        _isLoading = false;
+                      });
+                      _isError = true;
+                      var errorMessage = 'Authentication failed';
+                      if (error.toString().contains('email-already-in-use')) {
+                        errorMessage = 'This email address is already in use.';
+                      } else if (error.toString().contains('INVALID_EMAIL')) {
+                        errorMessage = 'This is not a valid email address';
+                      } else if (error.toString().contains('WEAK_PASSWORD')) {
+                        errorMessage = 'This password is too weak.';
+                      }
+                      _showErrorDialog(errorMessage);
+                    }
+                    if (!_isError) {
+                      Navigator.of(context).pushReplacementNamed('/home');
+                    }
                   },
-                  child: const Text(
-                    'Sign Up',
+                  child: Text(
+                    _isLoading ? 'Signing up...' : 'Sign Up',
                     style: TextStyle(fontSize: 18, fontFamily: 'Poppins'),
                   ),
                 ),

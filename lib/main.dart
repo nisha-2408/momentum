@@ -1,15 +1,17 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:resolution_tracker/screens/fogot_passowrd_email.dart';
-import 'package:resolution_tracker/screens/forgot_password.dart';
 import 'package:resolution_tracker/screens/home_screen.dart';
 import 'package:resolution_tracker/screens/login_screen.dart';
 import 'package:resolution_tracker/screens/onboarding_screen.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:resolution_tracker/screens/signup_screen.dart';
 
-void main() {
+void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -20,75 +22,83 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Momentum',
-      theme: ThemeData(
-        primaryColor: Color(0xFF00BCD4),
-        scaffoldBackgroundColor: Color(0xFF101010), // Dark background
-        brightness: Brightness.dark,
+        title: 'Momentum',
+        theme: ThemeData(
+          primaryColor: Color(0xFF00BCD4),
+          scaffoldBackgroundColor: Color(0xFF101010), // Dark background
+          brightness: Brightness.dark,
 
-        // Text Theme
-        textTheme: const TextTheme(
-          headlineLarge: TextStyle(
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+          // Text Theme
+          textTheme: const TextTheme(
+            headlineLarge: TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+            headlineMedium: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w500,
+              color: Colors.white,
+            ),
+            bodyLarge: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+            ),
+            bodyMedium: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.normal,
+              color: Colors.white70,
+            ),
           ),
-          headlineMedium: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w500,
-            color: Colors.white,
+
+          // Input Decorations
+          inputDecorationTheme: const InputDecorationTheme(
+            filled: true,
+            fillColor: Color(0xFF1E1E1E), // Darker input field
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+              borderSide: BorderSide.none,
+            ),
+            hintStyle: TextStyle(
+              color: Colors.white54,
+            ),
           ),
-          bodyLarge: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
+
+          // Custom Card
+          cardTheme: const CardTheme(
+            color: Color(0xFF1E1E1E),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(20)),
+            ),
           ),
-          bodyMedium: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.normal,
-            color: Colors.white70,
+
+          // FloatingActionButton Theme
+          floatingActionButtonTheme: const FloatingActionButtonThemeData(
+            backgroundColor: Color(0xFF00BCD4),
+            foregroundColor: Colors.white,
           ),
         ),
-
-        // Input Decorations
-        inputDecorationTheme: const InputDecorationTheme(
-          filled: true,
-          fillColor: Color(0xFF1E1E1E), // Darker input field
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-            borderSide: BorderSide.none,
-          ),
-          hintStyle: TextStyle(
-            color: Colors.white54,
-          ),
+        // home: const MyHomePage(title: 'Momentum Home Page'),
+        debugShowCheckedModeBanner: false,
+        home: StreamBuilder(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (ctx, userSnapshot) {
+            if (userSnapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            }
+            if (userSnapshot.hasData) {
+              return HomeScreen();
+            }
+            return OnboardingScreen();
+          },
         ),
-
-        // Custom Card
-        cardTheme: const CardTheme(
-          color: Color(0xFF1E1E1E),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-          ),
-        ),
-
-        // FloatingActionButton Theme
-        floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          backgroundColor: Color(0xFF00BCD4),
-          foregroundColor: Colors.white,
-        ),
-      ),
-      // home: const MyHomePage(title: 'Momentum Home Page'),
-      debugShowCheckedModeBanner: false,
-      initialRoute: '/',
-      routes: {
-        '/': (ctx) => MyHomePage(title: 'Momentum Home Page'),
-        LoginScreen.routeName: (ctx) => LoginScreen(),
-        SignupScreen.routeName: (ctx) => SignupScreen(),
-        ForgotPasswordEmail.routeName: (ctx) => ForgotPasswordEmail(),
-        ForgotPassword.routeName: (ctx) => ForgotPassword(),
-        HomeScreen.routeName: (ctx) => HomeScreen(),
-      }
-    );
+        routes: {
+          LoginScreen.routeName: (ctx) => LoginScreen(),
+          SignupScreen.routeName: (ctx) => SignupScreen(),
+          ForgotPasswordEmail.routeName: (ctx) => ForgotPasswordEmail(),
+          HomeScreen.routeName: (ctx) => HomeScreen(),
+        });
   }
 }
 
@@ -114,6 +124,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return OnboardingScreen();
+    return StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (ctx, userSnapshot) {
+          print('here');
+          if (userSnapshot.hasData) {
+            return HomeScreen();
+          } else {
+            return OnboardingScreen();
+          }
+        });
   }
 }
