@@ -56,6 +56,25 @@ class Auth with ChangeNotifier {
     return null;
   }
 
+  Future<Map<String, dynamic>?> getUserInfo() async {
+    try {
+      final userInfo = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(_userId)
+          .get();
+
+      if (userInfo.exists) {
+        // Returning the entire document as a Map
+        return {...userInfo.data()!, 'userId': _userId};
+      } else {
+        return null; // Document does not exist
+      }
+    } catch (e) {
+      print('Error fetching user info: $e');
+      return null; // Return null in case of an error
+    }
+  }
+
   Future googleLogin() async {
     gl = true;
     print('here1');
@@ -93,8 +112,7 @@ class Auth with ChangeNotifier {
       FirebaseFirestore.instance.collection('users').doc(_userId).set({
         'name': response.user!.displayName,
         'email': response.user!.email,
-        'contact': no,
-        'imageUrl': response.user!.photoURL,
+        'avatar': 'assets/images/avatar4.png',
       });
     }
     //print(_token);
@@ -132,6 +150,7 @@ class Auth with ChangeNotifier {
     FirebaseFirestore.instance.collection('users').doc(_userId).set({
       'name': name,
       'email': email,
+      'avatar': 'assets/images/avatar4.png',
     });
     isNewUser = true;
     autoLogout();

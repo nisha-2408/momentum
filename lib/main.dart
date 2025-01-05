@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:resolution_tracker/screens/fogot_passowrd_email.dart';
 import 'package:resolution_tracker/screens/home_screen.dart';
 import 'package:resolution_tracker/screens/login_screen.dart';
+import 'package:resolution_tracker/screens/notification_screen.dart';
 import 'package:resolution_tracker/screens/onboarding_screen.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:resolution_tracker/screens/signup_screen.dart';
@@ -37,27 +38,36 @@ class MyApp extends StatelessWidget {
 
                     // Text Theme
                     textTheme: const TextTheme(
-                      headlineLarge: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                      headlineMedium: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                      ),
-                      bodyLarge: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black,
-                      ),
-                      bodyMedium: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.normal,
-                        color: Colors.white70,
-                      ),
-                    ),
+                        headlineLarge: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                        headlineMedium: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                        ),
+                        headlineSmall: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                        ),
+                        bodyLarge: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                        ),
+                        bodyMedium: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.white70,
+                        ),
+                        displayLarge: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w200,
+                          color: Colors.white,
+                        )),
 
                     // Input Decorations
                     inputDecorationTheme: const InputDecorationTheme(
@@ -105,6 +115,7 @@ class MyApp extends StatelessWidget {
                     ForgotPasswordEmail.routeName: (ctx) =>
                         ForgotPasswordEmail(),
                     HomeScreen.routeName: (ctx) => HomeScreen(),
+                    NotificationScreen.routeName: (ctx) => NotificationScreen(),
                   })),
     );
   }
