@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 import 'package:resolution_tracker/providers/auth.dart';
+import 'package:resolution_tracker/widgets/daily_progress.dart';
 import 'package:resolution_tracker/widgets/day_calendar.dart';
 import 'package:resolution_tracker/widgets/profile_banner_card.dart';
 
@@ -74,6 +75,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     userId: _userId,
                   ),
                   DayCalendar(),
+                  const SizedBox(height: 30,),
+                  ProgressWidget(completedTasks: 15, totalTasks: 15)
                 ],
               ),
             ),
