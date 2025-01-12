@@ -6,11 +6,11 @@ class ProgressWidget extends StatelessWidget {
   final int completedTasks;
   final int totalTasks;
 
-  const ProgressWidget({
+  ProgressWidget({
     Key? key,
     required this.completedTasks,
     required this.totalTasks,
-  })  : progress = completedTasks / totalTasks,
+  })  : progress = (totalTasks == 0) ? 0 : (completedTasks / totalTasks),
         super(key: key);
 
   @override

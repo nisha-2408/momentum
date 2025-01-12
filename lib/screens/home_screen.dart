@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 import 'package:resolution_tracker/providers/auth.dart';
-import 'package:resolution_tracker/widgets/daily_progress.dart';
 import 'package:resolution_tracker/widgets/day_calendar.dart';
+import 'package:resolution_tracker/widgets/habits_of_day.dart';
 import 'package:resolution_tracker/widgets/profile_banner_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -18,6 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   var _userName = 'Name';
   var _avatar = 'assets/images/avatar4.png';
   var _userId = '';
+  var _selectedDay = DateTime.now();
 
   @override
   void initState() {
@@ -74,12 +75,51 @@ class _HomeScreenState extends State<HomeScreen> {
                     onAvatarSelected: setAvatar,
                     userId: _userId,
                   ),
-                  DayCalendar(),
-                  const SizedBox(height: 30,),
-                  ProgressWidget(completedTasks: 15, totalTasks: 15)
+                  DayCalendar(
+                    selectedDay: _selectedDay,
+                    setSelectedDay: (day) {
+                      setState(() {
+                        _selectedDay = day;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 30),
+                  Expanded(
+                    child: HabitsOfTheDay(
+                      selectedDay: _selectedDay,
+                    ),
+                  ),
                 ],
               ),
             ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: !_isLoading
+          ? Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  // Define your logic to add a new habit here
+                  Navigator.of(context).pushNamed('/add-habits');
+                },
+                icon: const Icon(Icons.add, color: Colors.white),
+                label: const Text(
+                  "New Habit",
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      Theme.of(context).primaryColor, // Button color
+                  minimumSize: const Size(200, 50), // Button size
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25), // Rounded corners
+                  ),
+                ),
+              ),
+            )
+          : null, // Hide the floating button when loading
     );
   }
 }

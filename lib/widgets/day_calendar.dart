@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 class DayCalendar extends StatefulWidget {
-  const DayCalendar({super.key});
+  final DateTime selectedDay;
+  final Function(DateTime day) setSelectedDay;
+  const DayCalendar(
+      {super.key, required this.selectedDay, required this.setSelectedDay});
 
   @override
   State<DayCalendar> createState() => _DayCalendarState();
@@ -12,7 +15,6 @@ class _DayCalendarState extends State<DayCalendar> {
   final DateTime _endDay = DateTime(2025, 12, 31); // End of the calendar
   late final ScrollController _scrollController;
 
-  var _selectedDay = DateTime.now();
   var _focussedDay = DateTime.now();
 
   @override
@@ -80,21 +82,21 @@ class _DayCalendarState extends State<DayCalendar> {
                   return GestureDetector(
                     onTap: () {
                       setState(() {
-                        _selectedDay = day;
                         _focussedDay = day;
                       });
+                      widget.setSelectedDay(day);
                     },
                     child: Container(
                       width: 60, // Width for each day (adjust as needed)
                       margin: EdgeInsets.symmetric(horizontal: 4),
                       decoration: BoxDecoration(
-                        color: isSameDay(_selectedDay, day)
+                        color: isSameDay(widget.selectedDay, day)
                             ? Theme.of(context).primaryColor
                             : isSameDay(DateTime.now(), day)
                                 ? Color(0xFF0097A7)
                                 : Colors.transparent,
                         borderRadius: BorderRadius.circular(8),
-                        border: isSameDay(_selectedDay, day)
+                        border: isSameDay(widget.selectedDay, day)
                             ? null
                             : isSameDay(DateTime.now(), day)
                                 ? null

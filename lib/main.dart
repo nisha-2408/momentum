@@ -1,7 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:resolution_tracker/screens/add_habit.dart';
 import 'package:resolution_tracker/screens/fogot_passowrd_email.dart';
+import 'package:resolution_tracker/screens/habits_screen.dart';
 import 'package:resolution_tracker/screens/home_screen.dart';
 import 'package:resolution_tracker/screens/login_screen.dart';
 import 'package:resolution_tracker/screens/notification_screen.dart';
@@ -116,6 +118,8 @@ class MyApp extends StatelessWidget {
                         ForgotPasswordEmail(),
                     HomeScreen.routeName: (ctx) => HomeScreen(),
                     NotificationScreen.routeName: (ctx) => NotificationScreen(),
+                    HabitsScreen.routeName: (ctx) => HabitsScreen(),
+                    AddHabitScreen.routeName: (ctx) => AddHabitScreen()
                   })),
     );
   }

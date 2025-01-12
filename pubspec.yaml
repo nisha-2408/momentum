@@ -43,6 +43,8 @@ dependencies:
   provider: ^6.1.2
   shared_preferences: ^2.3.5
   percent_indicator: ^4.2.4
+  font_awesome_flutter: ^10.8.0
+  intl: ^0.20.1
 
 dev_dependencies:
   flutter_test:
