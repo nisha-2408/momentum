@@ -132,9 +132,15 @@ class _HabitCardState extends State<HabitCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (widget.habit['duration'] == null) {
-          _showCustomDialog(context);
+        String formattedDate = DateFormat('yyyy-MM-dd').format(widget.day);
+        String currentDay = DateFormat('yyyy-MM-dd').format(DateTime.now());
+        if (_percent != 0 ||formattedDate != currentDay) {
+          return;
         }
+        if (widget.habit['duration'] != 0) {
+          Navigator.of(context).pushNamed('/timer', arguments: widget.habit);
+        }
+        _showCustomDialog(context);
       },
       child: Card(
         color: const Color(0xFF2D2D2D),

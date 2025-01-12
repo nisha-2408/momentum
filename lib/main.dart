@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:resolution_tracker/screens/add_habit.dart';
 import 'package:resolution_tracker/screens/fogot_passowrd_email.dart';
 import 'package:resolution_tracker/screens/habits_screen.dart';
+import 'package:resolution_tracker/screens/habits_timer.dart';
 import 'package:resolution_tracker/screens/home_screen.dart';
 import 'package:resolution_tracker/screens/login_screen.dart';
 import 'package:resolution_tracker/screens/notification_screen.dart';
@@ -119,7 +120,8 @@ class MyApp extends StatelessWidget {
                     HomeScreen.routeName: (ctx) => HomeScreen(),
                     NotificationScreen.routeName: (ctx) => NotificationScreen(),
                     HabitsScreen.routeName: (ctx) => HabitsScreen(),
-                    AddHabitScreen.routeName: (ctx) => AddHabitScreen()
+                    AddHabitScreen.routeName: (ctx) => AddHabitScreen(),
+                    HabitsTimerScreen.routeName: (ctx) => HabitsTimerScreen()
                   })),
     );
   }

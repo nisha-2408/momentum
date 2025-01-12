@@ -19,11 +19,15 @@ class _HabitsOfTheDayState extends State<HabitsOfTheDay> {
   var _isLoading = false;
   var habitsOfTheDay = [];
   var _completed = 0;
+  var _formattedDate;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_isInit) {
+      setState(() {
+        _formattedDate = DateFormat('yyyy-MM-dd').format(widget.selectedDay);
+      });
       _isLoading = true;
       fetchHabits();
       fetchCompleted();
@@ -35,6 +39,9 @@ class _HabitsOfTheDayState extends State<HabitsOfTheDay> {
   void didUpdateWidget(covariant StatefulWidget oldWidget) {
     super.didUpdateWidget(oldWidget as HabitsOfTheDay);
     if (widget.selectedDay != (oldWidget).selectedDay) {
+      setState(() {
+        _formattedDate = DateFormat('yyyy-MM-dd').format(widget.selectedDay);
+      });
       // Trigger Firestore query when selectedDay changes
       fetchHabits();
       fetchCompleted();
@@ -81,10 +88,12 @@ class _HabitsOfTheDayState extends State<HabitsOfTheDay> {
 
   @override
   Widget build(BuildContext context) {
+    final currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
     return Column(
       children: [
-        ProgressWidget(
-            completedTasks: _completed, totalTasks: habitsOfTheDay.length),
+        if (_formattedDate == currentDate)
+          ProgressWidget(
+              completedTasks: _completed, totalTasks: habitsOfTheDay.length),
         Padding(
           padding: const EdgeInsets.all(16),
           child: Container(

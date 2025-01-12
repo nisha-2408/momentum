@@ -44,7 +44,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
       'repeat': selectedRepeat,
       'days': selectedDays,
       'time': _selectedTime.format(context),
-      'duration': addDuration ? _selectedDuration : null
+      'duration': addDuration ? _selectedDuration : 0
     }).then((_) {
       setState(() {
         _isLoading = false;
